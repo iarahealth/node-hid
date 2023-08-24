@@ -10,10 +10,8 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-2019]
-        node-version: [10.x, 12.x, 14.x]
-
+        matrix:
+            os: [macos-latest, ubuntu-latest, windows-2019]
     steps:
       - uses: actions/checkout@v3
 
@@ -24,20 +22,34 @@ jobs:
           sudo apt install pkg-config libudev-dev libusb-1.0-0-dev
 
       - uses: actions/setup-python@v4
+        if: matrix.os != 'self-hosted-macos-arm'
         with:
           python-version: "3.10"
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16
           registry-url: "https://npm.pkg.github.com"
 
+      - run: npm install -g prebuildify
+
       - run: npm run prepublishOnly
-      - run: npm install --build-from-source
+      - run: npm install
       - run: npm test
-      - run: npm run prebuild
-      - run: npm run prebuild-upload ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Make prebuilds
+        run: prebuildify --napi
+
+      - name: Make macOS arm64 prebuilds
+        if: matrix.os == 'macos-latest'
+        run: prebuildify --napi --arch arm64
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-${{matrix.name}}-${{matrix.arch}}
+          path: build/Release
+          retention-days: 1
 
   publish:
     needs: build

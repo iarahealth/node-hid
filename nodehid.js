@@ -22,7 +22,7 @@ function loadBinding() {
             }
         }
         else {
-            binding = require('bindings')('HID.node');
+            binding = require('node-gyp-build')(__dirname)
         }
     }
 }

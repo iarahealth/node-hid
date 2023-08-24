@@ -11,8 +11,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-2019]
-        node-version: [10.x, 12.x, 14.x]
+        os: [macos-latest, ubuntu-latest, windows-2019, self-hosted-macos-arm]
+        node-version: [16.x]
 
     steps:
       - uses: actions/checkout@v3
@@ -24,6 +24,7 @@ jobs:
           sudo apt install pkg-config libudev-dev libusb-1.0-0-dev
 
       - uses: actions/setup-python@v4
+        if: matrix.os != 'self-hosted-macos-arm'
         with:
           python-version: "3.10"
 

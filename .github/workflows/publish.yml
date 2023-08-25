@@ -21,6 +21,10 @@ jobs:
           sudo apt update 
           sudo apt install pkg-config libudev-dev libusb-1.0-0-dev
 
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
       - uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -36,7 +40,7 @@ jobs:
         if: matrix.os != 'macos-latest'
         run: prebuildify --napi
 
-      - name: Make macOS universal prebuild
+      - name: Make macOS universal prebuilds
         if: matrix.os == 'macos-latest'
         run: prebuildify --napi --arch x64+arm64
 

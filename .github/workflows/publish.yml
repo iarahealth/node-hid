@@ -34,7 +34,7 @@ jobs:
       
       - run: npm run prebuild
       - if: matrix.os == 'macos-latest'
-        run: npm run prebuild -- --arch arm64
+        run: cp prebuilds/@iarahealth/node-hid-v2.2.1-napi-v3-darwin-x64.tar.gz prebuilds/@iarahealth/node-hid-v2.2.1-napi-v3-darwin-arm64.tar.gz
 
       - run: npm run prebuild-upload ${{ secrets.GITHUB_TOKEN }}
 
